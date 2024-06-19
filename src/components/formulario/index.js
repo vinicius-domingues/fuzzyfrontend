@@ -1,24 +1,61 @@
 import CampoSenha from '../camposenha'
 import CampoTexto from '../campotexto'
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Button';
 import './formulario.css'
+import Botao from '../botao';
+import { useState } from 'react';
+import { Link } from 'react-router-dom'
 
-const Formulario = () => {
+const Formulario = (props) => {
+    const [nome, setNome] = useState('')
+    const [senha, setSenha] = useState('')
+
+    const validador = (aoClicar) =>{
+        aoClicar.preventDefault();
+        console.log('Tentativa realizada.');
+        props.aoColaboradorCadastrado({
+            nome,
+            senha
+        })
+
+        // Verifica se ambos os campos estão preenchidos antes de trocar de página
+        if (nome !== '' && senha !== '') {
+            console.log('Ambos os campos estão preenchidos. Redirecionando...');
+        } else {
+            // Exibe uma mensagem de erro ou realiza outra ação desejada
+            console.log('Por favor, preencha ambos os campos.');
+            aoClicar.preventDefault(); // Impede a troca de página
+        }
+    }
+
     return(
         <section className='formulario'>
-            <form>
-                <CampoTexto label="E-mail" placeholder="Digite seu e-mail aqui"/>
-                <CampoSenha label="Senha" placeholder="Digite sua senha aqui"/>
-
+            <form onSubmit={validador}>
+                <CampoTexto
+                    obrigatorio={true}
+                    label="E-mail"
+                    placeholder="Digite seu e-mail aqui"
+                    valor={nome}
+                    aoAlterado={valor=>setNome(valor)}
+                />
+                
+                <CampoSenha
+                    obrigatorio={true}
+                    label="Senha"
+                    placeholder="Digite sua senha aqui"
+                    valor={senha}
+                    aoAlterado={valor=>setSenha(valor)}
+                />
                 <div className='entrar-esqueci'>
-                    <Typography variant="body2" style={{fontSize: '16px', textTransform: 'none', textDecoration: 'underline', padding: '0px'}}>Esqueci minha senha</Typography>
-                    <Button variant="contained" style={{letterSpacing: '.2rem', fontWeight: 'bold', fontSize: '16px', backgroundColor: '#7A00E6', width: '10rem', height:'47px'}}>ENTRAR</Button>
+                    <Link to='/digite-o-email'><p>Esqueci minha senha</p></Link>
+                    <Link to={nome !== '' && senha !== '' ? '/home' : '/'}> {/* Verifica se ambos os campos estão preenchidos */}
+                        <Botao type="submit">
+                            ENTRAR
+                        </Botao>
+                    </Link>
                 </div>
             </form>
-
         </section>
     )
 };
 
-export default Formulario
+export default Formulario;
